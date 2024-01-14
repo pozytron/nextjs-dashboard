@@ -1,4 +1,4 @@
-# Project Title
+# Solopreneur Dashboard
 
 This is a home pet project build to help dealing with creating and management of a solopreneur responsibilities, organization and client management.  
 
@@ -9,9 +9,9 @@ Currently, in development:
 
 ## Roadmap
 
-- Todo lists 
-
+- Todo lists
 - Finance tracking 
+- ... more ideas? 
 
 
 
