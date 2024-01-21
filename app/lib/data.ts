@@ -96,12 +96,22 @@ export async function fetchCardData() {
 
 const ITEMS_PER_PAGE = 6;
 
-export async function fetchFilteredInvoices(query: string, currentPage: number,) {
-    noStore();
-    const offset = (currentPage - 1) * ITEMS_PER_PAGE;
+/**
+ * Fetches filtered invoices from the database.
+ *
+ * @param query - The search query.
+ * @param currentPage - The current page number.
+ * @returns An array of invoice data.
+ */
+export async function fetchFilteredInvoices(query: string, currentPage: number) {
+  // Add noStore() here to prevent the response from being cached.
+  // This is equivalent to in fetch(..., {cache: 'no-store'}).
+  noStore();
 
-    try {
-        const invoices = await sql<InvoicesTable>`
+  const offset = (currentPage - 1) * ITEMS_PER_PAGE;
+
+  try {
+    const invoices = await sql<InvoicesTable>`
       SELECT
         invoices.id,
         invoices.amount,
@@ -122,11 +132,11 @@ export async function fetchFilteredInvoices(query: string, currentPage: number,)
       LIMIT ${ITEMS_PER_PAGE} OFFSET ${offset}
     `;
 
-        return invoices.rows;
-    } catch (error) {
-        console.error('Database Error:', error);
-        throw new Error('Failed to fetch invoices.');
-    }
+    return invoices.rows;
+  } catch (error) {
+    console.error('Database Error:', error);
+    throw new Error('Failed to fetch invoices.');
+  }
 }
 
 export async function fetchInvoicesPages(query: string) {
