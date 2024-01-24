@@ -1,8 +1,8 @@
 import React from 'react';
 import Breadcrumbs from "@/app/ui/invoices/breadcrumbs";
-import {fetchCustomers} from "@/app/lib/data";
 import Form from "@/app/ui/invoices/create-form";
 import {Metadata} from "next";
+import {fetchCustomers} from "@/app/lib/data/customers";
 
 export const metadata: Metadata = {
     title: 'Create invoice',

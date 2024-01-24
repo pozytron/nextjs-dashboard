@@ -2,19 +2,9 @@ import NextAuth from 'next-auth';
 import { authConfig } from './auth.config';
 import Credentials from "@auth/core/providers/credentials";
 import {z} from "zod";
-import {User} from "@/app/lib/definitions";
-import {sql} from "@vercel/postgres";
-import bcrypt from 'bcrypt';
 
-async function getUser(email: string): Promise<User | undefined> {
-    try {
-        const user = await sql<User>`SELECT * FROM users WHERE email=${email}`;
-        return user.rows[0];
-    } catch (error) {
-        console.error('Failed to fetch user:', error);
-        throw new Error('Failed to fetch user.');
-    }
-}
+import bcrypt from 'bcrypt';
+import {getUser} from "@/app/lib/data/users";
 
 export const { auth, signIn, signOut } = NextAuth({
     ...authConfig,

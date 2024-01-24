@@ -5,21 +5,22 @@ import {CreateInvoice} from "@/app/ui/invoices/buttons";
 import Pagination from "@/app/ui/invoices/pagination";
 import {InvoicesTableSkeleton} from "@/app/ui/skeletons";
 import Table from '@/app/ui/invoices/table';
-import {fetchInvoicesPages} from "@/app/lib/data";
+// import {fetchInvoicesPages} from "@/app/lib/data";
 import {Metadata} from "next";
+import {fetchInvoicesPages} from "@/app/lib/data/invoices";
 
 export const metadata: Metadata = {
     title: 'Invoices',
 };
 
-type Props = {
+type PageProps = {
     searchParams?: {
         query?: string;
         page?: string;
     }
 }
 
-export default async function Page({searchParams}: Props) {
+export default async function Page({searchParams}: PageProps) {
 
     const query = searchParams?.query || '';
     const currentPage = Number(searchParams?.page) || 1
@@ -29,7 +30,7 @@ export default async function Page({searchParams}: Props) {
         <div className="w-full">
             <div className="flex w-full items-center justify-between">
                 <h1 className={`${lusitana.className} text-2xl`}>
-                    Invices
+                    Invoices
                 </h1>
             </div>
             <div className="mt-4 flex items-center justify-between gap-2 md:mt-8">

@@ -111,6 +111,20 @@ export async function deleteInvoice(id: string) {
     }
 }
 
+// CUSTOMERS
+export async function deleteCustomer(id: string) {
+    try {
+        await sql`DELETE FROM customers WHERE id = ${id}`
+        revalidatePath('/dashboard/customers');
+
+    } catch (error) {
+        return {message: 'Database Error: Failed to Delete Customer.'};
+    }
+}
+
+
+//  AUTHENTICATION
+
 export async function authenticate(
     prevState: string | undefined,
     formData: FormData,
