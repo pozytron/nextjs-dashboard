@@ -1,10 +1,10 @@
 import React from 'react';
-import Breadcrumbs from "@/app/ui/invoices/breadcrumbs";
 import Form from "@/app/ui/invoices/edit-form";
 import {notFound} from "next/navigation";
 import {Metadata} from "next";
 import {fetchInvoiceById} from "@/app/lib/data/invoices";
 import {fetchCustomers} from "@/app/lib/data/customers";
+import Breadcrumbs from "@/app/ui/breadcrumbs/breadcrumbs";
 
 export const metadata: Metadata = {
     title: 'Edit invoice',

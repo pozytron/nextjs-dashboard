@@ -36,6 +36,7 @@ export default async function InvoicesTable({query, currentPage,}: Props) {
                                         <p className="text-sm text-gray-500">{invoice.email}</p>
                                     </div>
                                     <InvoiceStatus status={invoice.status}/>
+                                    <InvoiceStatus status={invoice.status}/>
                                 </div>
                                 <div className="flex w-full items-center justify-between pt-4">
                                     <div>
