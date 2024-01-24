@@ -1,6 +1,6 @@
 import React, {Suspense} from 'react';
 import {Metadata} from "next";
-import {fetchCustomers, fetchCustomersPages, fetchFilteredCustomers} from "@/app/lib/data/customers";
+import {fetchCustomersPages} from "@/app/lib/data/customers";
 import Table from '@/app/ui/customers/table';
 import {lusitana} from "@/app/ui/fonts";
 import Search from "@/app/ui/search";
@@ -23,8 +23,6 @@ export default async function Page({searchParams}: PageProps) {
     const currentPage = Number(searchParams?.page) || 1
     const totalPages = await  fetchCustomersPages(query);
 
-    //  TODO add pagination
-
     return (
         <div className="w-full">
             <div className="flex w-full items-center justify-between">
@@ -36,6 +34,8 @@ export default async function Page({searchParams}: PageProps) {
                 <Search placeholder="Search customers..."/>
                 <CreateCustomer/>
             </div>
+
+            {/* TODO https://makingtechnology.atlassian.net/browse/SD-1*/}
             <Suspense key={query + currentPage} fallback={<div>Loading...</div>}>
                 <Table query={query} currentPage={currentPage}/>
             </Suspense>
