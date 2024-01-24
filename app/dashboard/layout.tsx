@@ -1,5 +1,8 @@
 import React from 'react';
 import Sidenav from '../ui/dashboard/sidenav';
+import {Metadata} from "next";
+
+
 
 function Layout({children}:{children:React.ReactNode}) {
     return (
