@@ -1,9 +1,9 @@
 'use client'
 import Link from 'next/link';
-import {EnvelopeIcon, LockClosedIcon, PencilIcon} from "@heroicons/react/24/outline";
+import {EnvelopeIcon, KeyIcon, PencilIcon} from "@heroicons/react/24/outline";
 import {Button} from '@/app/ui/button';
 import {useFormState} from "react-dom";
-import {createCustomer, createUser} from "@/app/lib/actions";
+import {createUser} from "@/app/lib/actions";
 
 export default function UserCreateForm() {
     const initialState = {message: null, errors: {}};
@@ -96,7 +96,7 @@ export default function UserCreateForm() {
                                 minLength={6}
                                 // required
                             />
-                            <LockClosedIcon
+                            <KeyIcon
                                 className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900"/>
                         </div>
                     </div>

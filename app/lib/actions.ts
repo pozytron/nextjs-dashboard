@@ -234,6 +234,7 @@ const UserFormSchema = z.object({
     name: z.string().min(1, {message: "Please enter a user name"}),
     email: z.string().min(1, {message: "Please enter a user email"}),
     password: z.string().min(1, {message: "Please enter a user password"}),
+    passwordAgain: z.string().min(1, {message: "Please enter a user password"}),
 })
 
 const CreateUserSchema = UserFormSchema.omit({id: true})
@@ -243,6 +244,7 @@ type UserFormState = {
         name?: string[];
         email?: string[];
         password?: string[];
+        passwordAgain?: string[];
     }
     message?: string | null
 
@@ -288,6 +290,51 @@ export async function deleteUser(id: string) {
     } catch (error) {
         return {message: 'Database Error: Failed to Delete Customer.'};
     }
+}
+
+const RegisterUserSchema = UserFormSchema
+    .omit({id: true})
+    .refine(data => data.password === data.passwordAgain, {
+    message: "Passwords don't match",
+    path: ["passwordAgain"],
+});
+
+export async function registerUser(prevState:UserFormState, formData:FormData) {
+    console.log("Register user....")
+    const validatedFields = RegisterUserSchema.safeParse(
+        {
+            name: formData.get('name'),
+            email: formData.get('email'),
+            password: formData.get('password'),
+            passwordAgain: formData.get('passwordAgain'),
+        })
+
+    if(!validatedFields.success){
+        console.log({validatedFields})
+        console.log(validatedFields.error)
+
+        return {
+            errors: validatedFields.error.flatten().fieldErrors,
+            message: 'Missing Fields. Failed to Create Customer.'
+        }
+    }
+    console.log({validatedFields})
+    const { email, name ,password,passwordAgain} = validatedFields.data;
+
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+    try {
+        await sql`
+            INSERT INTO users (name, email,password)
+            VALUES (${name},${email},${hashedPassword})
+            `;
+    } catch (error) {
+        console.log(error)
+        return {
+            message: 'Database Error: Failed to Create User.',
+        };
+    }
+    redirect('/login');
 }
 
 const UpdateUserSchema = UserFormSchema.omit({id: true})

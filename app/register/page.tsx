@@ -1,10 +1,10 @@
 import React from 'react';
 import AcmeLogo from "@/app/ui/acme-logo";
-import LoginForm from "@/app/ui/auth/login-form";
 import {Metadata} from "next";
+import RegisterForm from "@/app/ui/auth/register-form";
 
 export const metadata: Metadata = {
-    title: 'Login',
+    title: 'Register',
 };
 
 export default function LoginPage() {
@@ -16,7 +16,7 @@ export default function LoginPage() {
                         <AcmeLogo/>
                     </div>
                 </div>
-                <LoginForm/>
+                <RegisterForm/>
             </div>
         </main>
     );
