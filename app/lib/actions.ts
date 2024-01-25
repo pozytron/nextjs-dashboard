@@ -7,6 +7,30 @@ import {revalidatePath} from "next/cache";
 import {redirect} from "next/navigation";
 import {signIn} from "@/auth";
 import {AuthError} from "next-auth";
+import bcrypt from "bcrypt";
+
+
+//  AUTHENTICATION
+
+export async function authenticate(
+    prevState: string | undefined,
+    formData: FormData,
+) {
+    try {
+        await signIn('credentials', formData);
+    } catch (error) {
+        if (error instanceof AuthError) {
+            switch (error.type) {
+                case 'CredentialsSignin':
+                    return 'Invalid credentials. None shall pass!';
+                default:
+                    return 'WTF? Something went wrong.';
+            }
+        }
+        throw error;
+    }
+}
+
 
 const InvoiceFormSchema = z.object({
     id: z.string(),
@@ -111,26 +135,6 @@ export async function deleteInvoice(id: string) {
 }
 
 
-//  AUTHENTICATION
-
-export async function authenticate(
-    prevState: string | undefined,
-    formData: FormData,
-) {
-    try {
-        await signIn('credentials', formData);
-    } catch (error) {
-        if (error instanceof AuthError) {
-            switch (error.type) {
-                case 'CredentialsSignin':
-                    return 'Invalid credentials. None shall pass!';
-                default:
-                    return 'WTF? Something went wrong.';
-            }
-        }
-        throw error;
-    }
-}
 // CUSTOMERS
 
 
@@ -221,4 +225,99 @@ WHERE id = ${id}`
     }
     revalidatePath('/dashboard/customers');
     redirect('/dashboard/customers');
+}
+
+//  ***********************   USERS   ***********************
+
+const UserFormSchema = z.object({
+    id:z.string(),
+    name: z.string().min(1, {message: "Please enter a user name"}),
+    email: z.string().min(1, {message: "Please enter a user email"}),
+    password: z.string().min(1, {message: "Please enter a user password"}),
+})
+
+const CreateUserSchema = UserFormSchema.omit({id: true})
+
+type UserFormState = {
+    errors?: {
+        name?: string[];
+        email?: string[];
+        password?: string[];
+    }
+    message?: string | null
+
+}
+
+export async function createUser(prevState:UserFormState, formData:FormData) {
+    console.log("Creating user....")
+    const validatedFields = CreateUserSchema.safeParse(
+        {
+            name: formData.get('name'),
+            email: formData.get('email'),
+            password: formData.get('password'),
+        })
+    if(!validatedFields.success){
+        return {
+            errors: validatedFields.error.flatten().fieldErrors,
+            message: 'Missing Fields. Failed to Create Customer.'
+        }
+    }
+    console.log({validatedFields})
+    const { email, name ,password} = validatedFields.data;
+    const hashedPassword = await bcrypt.hash(password, 10);
+    try {
+        await sql`
+            INSERT INTO users (name, email,password)
+            VALUES (${name},${email},${hashedPassword})
+            `;
+    } catch (error) {
+        console.log(error)
+        return {
+            message: 'Database Error: Failed to Create User.',
+        };
+    }
+    revalidatePath('/dashboard/users');
+    redirect('/dashboard/users');
+}
+export async function deleteUser(id: string) {
+
+    try {
+        await sql`DELETE FROM customers WHERE id = ${id}`
+        revalidatePath('/dashboard/users');
+
+    } catch (error) {
+        return {message: 'Database Error: Failed to Delete Customer.'};
+    }
+}
+
+const UpdateUserSchema = UserFormSchema.omit({id: true})
+
+export async function updateUser(id: string, prevState:UserFormState, formData: FormData) {
+    console.log("Updating user....")
+    const validatedFields = UpdateUserSchema.safeParse(
+        {
+            name: formData.get('name'),
+            email: formData.get('email'),
+        }
+    )
+    if(!validatedFields.success){
+        return {
+            errors: validatedFields.error.flatten().fieldErrors,
+            message: 'Missing Fields. Failed to Update User.'
+        }
+    }
+
+    const { email, name } = validatedFields.data;
+    try {
+        await sql`
+UPDATE users
+SET name = ${name}, email = ${email}
+WHERE id = ${id}`
+
+
+    } catch (error) {
+        return {message: 'Database Error: Failed to Update User.'};
+    }
+    revalidatePath('/dashboard/users');
+    redirect('/dashboard/users');
 }
