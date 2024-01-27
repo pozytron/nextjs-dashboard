@@ -41,7 +41,9 @@ export async function fetchFilteredUsers(query: string, currentPage: number) {
 		SELECT 
 		users.id,
 		  users.name,
-		  users.email
+		  users.email,
+		  users.is_admin,
+		  users.is_active
 		FROM users
 		WHERE
 		  users.name ILIKE ${`%${query}%`} OR
@@ -63,7 +65,9 @@ export async function fetchUserById(id: string) {
       SELECT
         users.id,
         users.name,
-        users.email
+        users.email,
+        users.is_admin,
+        users.is_active
       FROM users
       WHERE users.id = ${id};
     `;

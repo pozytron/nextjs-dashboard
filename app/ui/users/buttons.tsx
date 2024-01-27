@@ -26,10 +26,12 @@ export function UpdateUser({ id }: { id: string }) {
 }
 
 export function DeleteUser({ id }: { id: string }) {
-  const deleteInvoiceWithId = deleteUser.bind(null,id);
 
+  // const deleteInvoiceWithId = deleteUser.bind(null,id);
+  //   throw new Error("cannot delete users yet ")
   return (
-    <form action={deleteInvoiceWithId}>
+    // <form action={deleteInvoiceWithId}>
+    <form >
       <button className="rounded-md border p-2 hover:bg-gray-100">
         <span className="sr-only">Delete</span>
         <TrashIcon className="w-5" />

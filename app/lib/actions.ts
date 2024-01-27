@@ -235,6 +235,8 @@ const UserFormSchema = z.object({
     email: z.string().min(1, {message: "Please enter a user email"}),
     password: z.string().min(1, {message: "Please enter a user password"}),
     passwordAgain: z.string().min(1, {message: "Please enter a user password"}),
+    is_admin: z.boolean(),
+    is_active: z.boolean()
 })
 
 const CreateUserSchema = UserFormSchema.omit({id: true})
@@ -245,6 +247,8 @@ type UserFormState = {
         email?: string[];
         password?: string[];
         passwordAgain?: string[];
+        is_admin?: string[];
+        is_active?: string[];
     }
     message?: string | null
 
@@ -257,6 +261,9 @@ export async function createUser(prevState:UserFormState, formData:FormData) {
             name: formData.get('name'),
             email: formData.get('email'),
             password: formData.get('password'),
+            passwordAgain: formData.get('passwordAgain'),
+            is_admin: formData.get('is_admin') === 'true',
+            is_active: formData.get('is_active') === 'true',
         })
     if(!validatedFields.success){
         return {
@@ -265,12 +272,12 @@ export async function createUser(prevState:UserFormState, formData:FormData) {
         }
     }
     console.log({validatedFields})
-    const { email, name ,password} = validatedFields.data;
+    const { email, name ,password,is_admin,is_active} = validatedFields.data;
     const hashedPassword = await bcrypt.hash(password, 10);
     try {
         await sql`
-            INSERT INTO users (name, email,password)
-            VALUES (${name},${email},${hashedPassword})
+            INSERT INTO users (name, email,password,is_admin,is_active)
+            VALUES (${name},${email},${hashedPassword},${is_admin},${is_active})
             `;
     } catch (error) {
         console.log(error)
@@ -337,7 +344,7 @@ export async function registerUser(prevState:UserFormState, formData:FormData) {
     redirect('/login');
 }
 
-const UpdateUserSchema = UserFormSchema.omit({id: true})
+const UpdateUserSchema = UserFormSchema.omit({id: true,password:true,passwordAgain:true})
 
 export async function updateUser(id: string, prevState:UserFormState, formData: FormData) {
     console.log("Updating user....")
@@ -345,6 +352,8 @@ export async function updateUser(id: string, prevState:UserFormState, formData: 
         {
             name: formData.get('name'),
             email: formData.get('email'),
+            is_admin: formData.get('is_admin') === 'true',
+            is_active: formData.get('is_active') === 'true',
         }
     )
     if(!validatedFields.success){
@@ -354,11 +363,11 @@ export async function updateUser(id: string, prevState:UserFormState, formData: 
         }
     }
 
-    const { email, name } = validatedFields.data;
+    const { email, name,is_admin,is_active } = validatedFields.data;
     try {
         await sql`
 UPDATE users
-SET name = ${name}, email = ${email}
+SET name = ${name}, email = ${email},is_admin = ${is_admin},is_active = ${is_active}
 WHERE id = ${id}`
 
 

@@ -8,6 +8,7 @@ type Props = {
 }
 export default async function UsersTable({query, currentPage,}: Props) {
   const users = await fetchFilteredUsers(query, currentPage)
+  console.log({users})
   return (
 
       <div className="mt-6 flow-root">
@@ -30,6 +31,12 @@ export default async function UsersTable({query, currentPage,}: Props) {
                         <p className="text-sm text-gray-500">
                           {user.email}
                         </p>
+                        <p className="text-sm text-gray-500">
+                          {user.is_active ? "Active" : "Inactive"}
+                        </p>
+                        <p className="text-sm text-gray-500">
+                          {user.is_admin ? "Admin" : "User"}
+                        </p>
                       </div>
                     </div>
                   </div>
@@ -43,6 +50,12 @@ export default async function UsersTable({query, currentPage,}: Props) {
                   </th>
                   <th scope="col" className="px-3 py-5 font-medium">
                     Email
+                  </th>
+                  <th scope="col" className="px-3 py-5 font-medium">
+                    Active
+                  </th>
+                  <th scope="col" className="px-3 py-5 font-medium">
+                    Role
                   </th>
                   <th scope="col" className="relative py-3 pl-6 pr-3">
                     <span className="sr-only">Edit</span>
@@ -64,11 +77,17 @@ export default async function UsersTable({query, currentPage,}: Props) {
                       <td className="whitespace-nowrap px-3 py-3">
                         {user.email}
                       </td>
+                      <td className="whitespace-nowrap px-3 py-3">
+                        {user.is_active ? "Active" : "Inactive"}
+                      </td>
+                      <td className="whitespace-nowrap px-3 py-3">
+                        {user.is_admin ? "Admin" : "User"}
+                      </td>
                       <td className="whitespace-nowrap py-3 pl-6 pr-3">
                         <div className="flex justify-end gap-3">
                           <UpdateUser id={user.id}/>
-                          <DeleteUser id={user.id}/>
-                          {user.id?<DeactivateUser id={user.id}/> : <ActivateUser id={user.id}/>}
+                          {/*<DeleteUser id={user.id}/>*/}
+                          {/*{user.id ? <DeactivateUser id={user.id}/> : <ActivateUser id={user.id}/>}*/}
                         </div>
                       </td>
                     </tr>

@@ -9,6 +9,7 @@ import { ArrowRightIcon } from '@heroicons/react/20/solid';
 import { Button } from '../button';
 import {useFormState, useFormStatus} from "react-dom";
 import {authenticate, registerUser} from "@/app/lib/actions";
+import Link from "next/link";
 
 export default function RegisterForm() {
   const initialState = {message: null, errors: {}};
@@ -22,6 +23,7 @@ export default function RegisterForm() {
           Register a new account
         </h1>
         <div className="w-full">
+            {/* Name */}
           <div className="mb-4">
             <label htmlFor="name" className="mb-2 block text-sm font-medium">
               User name
@@ -50,7 +52,8 @@ export default function RegisterForm() {
                   ))}
             </div>
           </div>
-          <div>
+            {/* Email */}
+          <div className="mt-4">
             <label
                 className="mb-3 mt-5 block text-xs font-medium text-gray-900"
                 htmlFor="email"
@@ -70,6 +73,7 @@ export default function RegisterForm() {
                   className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900"/>
             </div>
           </div>
+            {/* Password */}
           <div className="mt-4">
             <label
                 className="mb-3 mt-5 block text-xs font-medium text-gray-900"
@@ -91,6 +95,7 @@ export default function RegisterForm() {
                   className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900"/>
             </div>
           </div>
+          {/* Password again */}
           <div className="mt-4">
             <label
                 className="mb-3 mt-5 block text-xs font-medium text-gray-900"
@@ -121,7 +126,20 @@ export default function RegisterForm() {
             </div>
           </div>
         </div>
+        <div className="flex gap-2">
+
         <RegisterButton/>
+          <div
+              className="flex items-center gap-5 mt-4 px-6 py-2 text-sm font-medium "
+          >OR</div>
+        <Link
+            href="/login"
+            className="flex  w-full items-center gap-5 mt-4 self-start rounded-lg bg-blue-500 px-6 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-400 md:text-base"
+        >
+          <span>Log in</span> <ArrowRightIcon className="w-5 md:w-6"/>
+        </Link>
+
+        </div>
         <div
             className="flex h-8 items-end space-x-1"
             aria-live="polite"
