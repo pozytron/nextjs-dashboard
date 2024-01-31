@@ -188,9 +188,263 @@ const revenue = [
   { month: 'Dec', revenue: 4800 },
 ];
 
+const coupons = [
+  {
+    id: "3958dc9e-712f-0002-85e9-fec4b6a00000",
+    code: "ABC-DEFG-HIJK",
+    description: "kupon testowy",
+    user_id: users[0].id,
+    created_at: new Date().toISOString(),
+    redeem_timestamp: new Date(),
+  },
+  {
+    id: "3958dc9e-712f-0002-85e9-fec4b6a00001",
+    code: "LMNO-PRST-UVWX",
+    description: "kupon testowy",
+    user_id: users[0].id,
+    created_at: new Date().toISOString(),
+    redeem_timestamp: new Date(),
+  },
+  {
+    id: "3958dc9e-712f-0002-85e9-fec4b6a00002",
+    code: "1234-5678-9101",
+    user_id: users[1].id,
+    description: "kupon testowy",
+    created_at: new Date().toISOString(),
+    redeem_timestamp: new Date(),
+  },
+  {
+    id: "3958dc9e-712f-0002-85e9-fec4b6a00003",
+    code: "AAAA-BBCC-DDDD",
+    user_id: null,
+    description: "kupon testowy",
+    created_at: new Date().toISOString(),
+    redeem_timestamp: null,
+  }
+];
+
+const monsters = [
+  {
+    id: '3958dc9e-712f-0002-0001-000000000000',
+    name: 'Leoś',
+    power: 5,
+    image: '/img/monsters/leos.svg',
+    planet: '/img/planets/planet21.png',
+    created_at: new Date(),
+    updated_at: new Date(),
+    team: null,
+    is_active: false,
+    description: "brak opisu"
+  },
+  {
+    id: '3958dc9e-712f-0002-0001-000000000001',
+    name: 'Tosia',
+    power: 3,
+    image: '/img/monsters/tosia.svg',
+    planet: '/img/planets/planet3.png',
+    created_at: new Date(),
+    updated_at: new Date(),
+    team: null,
+    is_active: false,
+    description: "brak opisu"
+  },
+  {
+    id: '3958dc9e-712f-0002-0001-000000000002',
+    name: 'Plazmuś',
+    power: 2,
+    image: '/img/monsters/plazmus.svg',
+    planet: '/img/planets/planet20.png',
+    created_at: new Date(),
+    updated_at: new Date(),
+    team: null,
+    is_active: false,
+    description: "brak opisu"
+  },
+  {
+    id: '3958dc9e-712f-0002-0001-000000000003',
+    name: 'Aloszka',
+    power: 4,
+    image: '/img/monsters/aloszka.svg',
+    planet: '/img/planets/planet7.png',
+    created_at: new Date(),
+    updated_at: new Date(),
+    team: null,
+    is_active: false,
+    description: "brak opisu"
+  },
+  {
+    id: '3958dc9e-712f-0002-0001-000000000004',
+    name: 'Beniu',
+    power: 3,
+    image: '/img/monsters/beniu.svg',
+    planet: '/img/planets/planet21.png',
+    created_at: new Date(),
+    updated_at: new Date(),
+    team: null,
+    is_active: false,
+    description: "brak opisu"
+  },
+  {
+    id: '3958dc9e-712f-0002-0001-000000000005',
+    name: 'Edi',
+    power: 2,
+    image: '/img/monsters/edi.svg',
+    planet: '/img/planets/planet7.png',
+    created_at: new Date(),
+    updated_at: new Date(),
+    team: null,
+    is_active: false,
+    description: "brak opisu"
+  },
+  {
+    id: '3958dc9e-712f-0002-0001-000000000006',
+    name: 'Bunia',
+    power: 3,
+    image: '/img/monsters/bunia.svg',
+    planet: '/img/planets/planet3.png',
+    created_at: new Date(),
+    updated_at: new Date(),
+    team: null,
+    is_active: false,
+    description: "brak opisu"
+  },
+  {
+    id: '3958dc9e-712f-0002-0001-000000000007',
+    name: 'Faris',
+    power: 3,
+    image: '/img/monsters/faris.svg',
+    planet: '/img/planets/planet19.png',
+    created_at: new Date(),
+    updated_at: new Date(),
+    team: null,
+    is_active: false,
+    description: "brak opisu"
+  },
+  {
+    id: '3958dc9e-712f-0002-0001-000000000008',
+    name: 'Tella',
+    power: 2,
+    image: '/img/monsters/tella.svg',
+    planet: '/img/planets/planet18.png',
+    created_at: new Date(),
+    updated_at: new Date(),
+    team: null,
+    is_active: false,
+    description: "brak opisu"
+  },
+  {
+    id: '3958dc9e-712f-0002-0001-000000000009',
+    name: 'Mikson',
+    power: 5,
+    image: '/img/monsters/mikson.svg',
+    planet: '/img/planets/planet2.png',
+    created_at: new Date(),
+    updated_at: new Date(),
+    team: null,
+    is_active: false,
+    description: "brak opisu"
+  },
+  {
+    id: '3958dc9e-712f-0002-0001-000000000010',
+    name: 'Fred',
+    power: 4,
+    image: '/img/monsters/fred.svg',
+    planet: '/img/planets/planet20.png',
+    created_at: new Date(),
+    updated_at: new Date(),
+    team: null,
+    is_active: false,
+    description: "brak opisu,"
+  },
+  {
+    id: '3958dc9e-712f-0002-0001-000000000011',
+    name: 'Dino',
+    power: 5,
+    image: '/img/monsters/dino.svg',
+    planet: '/img/planets/planet18.png',
+    created_at: new Date(),
+    updated_at: new Date(),
+    team: null,
+    is_active: false,
+    description: "brak opisu,"
+  },
+  {
+    id: '3958dc9e-712f-0002-0001-000000000012',
+    name: 'Roki',
+    power: 2,
+    image: '/img/monsters/roki.svg',
+    planet: '/img/planets/planet19.png',
+    created_at: new Date(),
+    updated_at: new Date(),
+    team: null,
+    is_active: false,
+    description: "brak opisu,"
+  },
+  {
+    id: '3958dc9e-712f-0002-0001-000000000013',
+    name: 'Vidar',
+    power: 3,
+    image: '/img/monsters/vidar.svg',
+    planet: '/img/planets/planet2.png',
+    created_at: new Date(),
+    updated_at: new Date(),
+    team: null,
+    is_active: false,
+    description: "brak opisu,"
+  },
+  {
+    id: '3958dc9e-712f-0002-0001-000000000014',
+    name: 'Bob',
+    power: 4,
+    image: '/img/monsters/bob.svg',
+    planet: '/img/planets/planet16.png',
+    created_at: new Date(),
+    updated_at: new Date(),
+    team: null,
+    is_active: false,
+    description: "brak opisu,"
+  },
+  {
+    id: '3958dc9e-712f-0002-0001-000000000015',
+    name: 'Majson',
+    power: 3,
+    image: '/img/monsters/majson.svg',
+    planet: '/img/planets/planet16.png',
+    created_at: new Date(),
+    updated_at: new Date(),
+    team: null,
+    is_active: false,
+    description: "brak opisu,"
+  }
+]
+
+const user_monsters = [
+  {
+    id:"aaaaaaaa-aaaa-0a0a-000a-000000000000",
+    user_id: users[0].id,
+    monster_id: monsters[0].id,
+    acquired_at: new Date(),
+  },
+  {
+    id:"aaaaaaaa-aaaa-0a0a-000a-000000000001",
+    user_id: users[0].id,
+    monster_id: monsters[1].id,
+    acquired_at: new Date(),
+  },
+  {
+    id:"aaaaaaaa-aaaa-0a0a-000a-000000000003",
+    user_id: users[1].id,
+    monster_id: monsters[0].id,
+    acquired_at: new Date(),
+  }
+    ]
+
 module.exports = {
   users,
   customers,
   invoices,
   revenue,
+  coupons,
+  monsters,
+  user_monsters
 };

@@ -5,7 +5,7 @@ import {z} from "zod";
 import {sql} from "@vercel/postgres";
 import {revalidatePath} from "next/cache";
 import {redirect} from "next/navigation";
-import {signIn} from "@/auth";
+import {config} from "@/auth";
 import {AuthError} from "next-auth";
 import bcrypt from "bcrypt";
 
@@ -17,7 +17,7 @@ export async function authenticate(
     formData: FormData,
 ) {
     try {
-        await signIn('credentials', formData);
+        await config.signIn('credentials', formData);
     } catch (error) {
         if (error instanceof AuthError) {
             switch (error.type) {
@@ -376,4 +376,56 @@ WHERE id = ${id}`
     }
     revalidatePath('/dashboard/users');
     redirect('/dashboard/users');
+}
+
+// ***************************************************************************
+// COUPONS
+// ***************************************************************************
+
+type CouponState = {
+    errors?: {
+        code?: string[];
+        description?: string[];
+    }
+    message?: string | null
+
+}
+
+const CouponFormSchema = z.object({
+    id: z.string(),
+    code: z.string().regex(/^[A-Za-z0-9]{4}-[A-Za-z0-9]{4}-[A-Za-z0-9]{4}-[A-Za-z0-9]{4}$/, { message: "Code must be in format XXXX-XXXX-XXXX-XXXX" }),
+    description: z.string(),
+})
+const CreateCouponSchema = CouponFormSchema.omit({id: true})
+
+export async function createCoupon(prevState:CouponState, formData: FormData) {
+    console.log("Creating coupon....")
+    const validatedFields = CreateCouponSchema.safeParse(
+        {
+            code: formData.get('code'),
+            description: formData.get('description'),
+        }
+    )
+    if(!validatedFields.success){
+        return {
+            errors: validatedFields.error.flatten().fieldErrors,
+            message: 'Missing Fields. Failed to Create Coupon.'
+        }
+    }
+
+    const { code,description } = validatedFields.data;
+
+    try {
+        await sql`
+            INSERT INTO coupons (code,description)
+            VALUES (${code},${description})
+            `;
+
+    } catch (error) {
+        return {
+            message: 'Database Error: Failed to Create Coupon.',
+        };
+    }
+    revalidatePath('/dashboard/coupons');
+    redirect('/dashboard/coupons');
 }

@@ -5,6 +5,9 @@ const {
     customers,
     revenue,
     users,
+    coupons,
+    monsters,
+    user_monsters
 } = require('../app/lib/placeholder-data.js');
 const bcrypt = require('bcrypt');
 
@@ -163,6 +166,132 @@ async function seedRevenue(client) {
     }
 }
 
+async function seedCoupons(client) {
+    try {
+        await client.sql`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`;
+
+        // Create the "customers" table if it doesn't exist
+        const createTable = await client.sql`
+      CREATE TABLE IF NOT EXISTS coupons (
+        id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+        user_id UUID REFERENCES users(id) DEFAULT NULL,
+        code VARCHAR(255) UNIQUE NOT NULL,
+        description TEXT,
+        created_at TIMESTAMP DEFAULT NOW(),
+        redeem_timestamp TIMESTAMP
+      );
+    `;
+
+        console.log(`Created "coupons" table`);
+
+        // Insert data into the "coupons" table
+        const inserted = await Promise.all(
+            coupons.map(
+                (coupon) => client.sql`
+        INSERT INTO coupons (id, code, description, created_at, redeem_timestamp)
+        VALUES (${coupon.id}, ${coupon.code}, ${coupon.description}, ${coupon.created_at}, ${coupon.redeem_timestamp})
+        ON CONFLICT (id) DO NOTHING;
+      `,
+            ),
+        );
+
+        console.log(`Seeded ${inserted.length} coupons`);
+
+        return {
+            createTable,
+            coupons: inserted,
+        };
+    } catch (error) {
+        console.error('Error seeding coupons:', error);
+        throw error;
+    }
+}
+
+async function seedMonsters(client) {
+    try {
+        await client.sql`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`;
+
+        // Create the "customers" table if it doesn't exist
+        const createTable = await client.sql`
+        CREATE TABLE IF NOT EXISTS monsters (
+            id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+            name VARCHAR(255) UNIQUE NOT NULL,
+            power INT,
+            image TEXT,
+            planet TEXT,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            team VARCHAR(255) CHECK (team IN ('earth', 'water', 'fire', 'wind') OR team IS NULL),
+            is_active BOOLEAN DEFAULT FALSE,
+            description TEXT
+      );
+    `;
+
+        console.log(`Created "monsters" table`);
+
+        // Insert data into the "monsters" table
+        const inserted = await Promise.all(
+            monsters.map(
+                (monster) => client.sql`
+        INSERT INTO monsters (id, name, power, image, description, planet,created_at,updated_at,team,is_active)
+        VALUES (${monster.id}, ${monster.name}, ${monster.power}, ${monster.image}, ${monster.description}, ${monster.planet}, ${monster.created_at}, ${monster.updated_at}, ${monster.team}, ${monster.is_active})
+        ON CONFLICT (id) DO NOTHING;
+      `,
+            ),
+        );
+
+        console.log(`Seeded ${inserted.length} monsters`);
+
+        return {
+            createTable,
+            monsters: inserted,
+        };
+    } catch (error) {
+        console.error('Error seeding monsters:', error);
+        throw error;
+    }
+}
+
+async function seedUserMonsters(client) {
+    try {
+        await client.sql`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`;
+
+        // Create the "customers" table if it doesn't exist
+        const createTable = await client.sql`
+        CREATE TABLE IF NOT EXISTS user_monsters (
+            id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+            user_id UUID REFERENCES users(id) NOT NULL,
+            monster_id UUID REFERENCES monsters(id) NOT NULL,
+            acquired_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+    `;
+
+        console.log(`Created "user_monsters" table`);
+
+        // Insert data into the "monsters" table
+        const inserted = await Promise.all(
+            user_monsters.map(
+                (monster) => client.sql`
+        INSERT INTO user_monsters (id, user_id, monster_id, acquired_at)
+        VALUES (${monster.id}, ${monster.user_id}, ${monster.monster_id}, ${monster.acquired_at})
+        ON CONFLICT (id) DO NOTHING;
+      `,
+            ),
+        );
+
+        console.log(`Seeded ${inserted.length} user_monsters`);
+
+        return {
+            createTable,
+            user_monsters: inserted,
+        };
+    } catch (error) {
+        console.error('Error seeding user_monsters:', error);
+        throw error;
+    }
+}
+
+
 async function main() {
     const client = await db.connect();
 
@@ -170,7 +299,9 @@ async function main() {
     await seedCustomers(client);
     await seedInvoices(client);
     await seedRevenue(client);
-
+    await seedCoupons(client);
+    await seedMonsters(client)
+    await seedUserMonsters(client)
     await client.end();
 }
 
