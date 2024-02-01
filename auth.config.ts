@@ -21,14 +21,31 @@ export const authConfig = {
         return session;
     },
         // This will prevent users from accessing the dashboard pages unless they are logged in.
+        // authorized({auth,request:{nextUrl}}){
+        //     const isLoggedIn = !!auth?.user;
+        //     const isOnDashboard = nextUrl.pathname.startsWith('/dashboard');
+        //     if(isOnDashboard){
+        //         if(isLoggedIn) return true
+        //         return false; // redirect unauthenticated users to login page
+        //     } else if (isLoggedIn){
+        //         return Response.redirect(new URL('/dashboard',nextUrl));
+        //     }
+        //
+        //     return true
+        // }
         authorized({auth,request:{nextUrl}}){
             const isLoggedIn = !!auth?.user;
             const isOnDashboard = nextUrl.pathname.startsWith('/dashboard');
-            if(isOnDashboard){
+            const isOnAlbum = nextUrl.pathname.startsWith('/album');
+            if(isOnDashboard || isOnAlbum){
                 if(isLoggedIn) return true
                 return false; // redirect unauthenticated users to login page
             } else if (isLoggedIn){
+                // @ts-ignore
+                if(auth?.user?.isAdmin){
                 return Response.redirect(new URL('/dashboard',nextUrl));
+                }
+                return Response.redirect(new URL('/album',nextUrl));
             }
 
             return true
