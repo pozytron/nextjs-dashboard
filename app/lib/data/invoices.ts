@@ -37,12 +37,8 @@ export async function fetchLatestInvoices() {
  * @returns An array of invoice data.
  */
 export async function fetchFilteredInvoices(query: string, currentPage: number) {
-    // Add noStore() here to prevent the response from being cached.
-    // This is equivalent to in fetch(..., {cache: 'no-store'}).
     noStore();
-
     const offset = (currentPage - 1) * ITEMS_PER_PAGE;
-
     try {
         const invoices = await sql<InvoicesTable>`
       SELECT
@@ -87,8 +83,7 @@ SELECT COUNT(*)
       invoices.status ILIKE ${`%${query}%`}
   `;
 
-        const totalPages = Math.ceil(Number(count.rows[0].count) / ITEMS_PER_PAGE);
-        return totalPages;
+        return Math.ceil(Number(count.rows[0].count) / ITEMS_PER_PAGE);
     } catch (error) {
         console.error('Database Error:', error);
         throw new Error('Failed to fetch total number of invoices.');

@@ -1,13 +1,5 @@
 import {sql} from '@vercel/postgres';
-import {
-    CustomerField,
-    CustomersTableType,
-    InvoiceForm,
-    InvoicesTable,
-    LatestInvoiceRaw,
-    Revenue,
-    User,
-} from '../definitions';
+import {    Revenue,} from '../definitions';
 import {formatCurrency} from '../utils';
 import {unstable_noStore as noStore} from 'next/cache';
 
@@ -18,21 +10,9 @@ import {unstable_noStore as noStore} from 'next/cache';
  * @returns An array of revenue data.
  */
 export async function fetchRevenue() {
-    // Add noStore() here to prevent the response from being cached.
-    // This is equivalent to in fetch(..., {cache: 'no-store'}).
     noStore();
-
     try {
-        // Artificially delay a response for demo purposes.
-        // Don't do this in production :)
-
-        console.log('Fetching revenue data...');
-        await new Promise((resolve) => setTimeout(resolve, 5000));
-
         const data = await sql<Revenue>`SELECT * FROM revenue`;
-
-        // console.log('Data fetch completed after 3 seconds.');
-
         return data.rows;
     } catch (error) {
         console.error('Database Error:', error);

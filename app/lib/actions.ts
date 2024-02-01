@@ -429,3 +429,61 @@ export async function createCoupon(prevState:CouponState, formData: FormData) {
     revalidatePath('/dashboard/coupons');
     redirect('/dashboard/coupons');
 }
+
+type MonsterState = {
+    errors?: {
+        name?: string[];
+        power?: string[];
+        image?: string[];
+        planet?: string[];
+        team?: string[];
+        is_active?: string[];
+    }
+    message?: string | null
+}
+
+
+const MonsterFormSchema = z.object({
+    id:z.string(),
+    name: z.string().min(1, {message: "Please enter a monster name"}),
+    power: z.coerce.number().gt(0, {message: "Please enter an amount greater than 0"}),
+    image: z.string().min(1, {message: "Please enter url for image"}),
+    planet: z.string().min(1, {message: "Please enter url for planet"}),
+    team: z.string().min(1, {message: "Please provide team"}),
+    is_active: z.boolean(),
+})
+
+const MonsterCustomerSchema = MonsterFormSchema.omit({id: true})
+
+export async function createMonster(prevState:MonsterState, formData:FormData) {
+    console.log("Creating monster....")
+    const validatedFields = MonsterCustomerSchema.safeParse(
+        {
+            name: formData.get('name'),
+            power: formData.get('power'),
+            image: formData.get('image'),
+            planet: formData.get('planet'),
+            team: formData.get('team'),
+            is_active: formData.get('is_active') === 'true'
+        })
+    if(!validatedFields.success){
+        return {
+            errors: validatedFields.error.flatten().fieldErrors,
+            message: 'Missing Fields. Failed to Create Monster.'
+        }
+    }
+    const { name,power,image,planet,team,is_active } = validatedFields.data;
+    try {
+        await sql`
+            INSERT INTO monsters (name, power, image,planet,team,is_active)
+            VALUES (${name},${power},${image},${planet},${team},${is_active})
+            `;
+    } catch (error) {
+        console.log(error)
+        return {
+            message: 'Database Error: Failed to Create Monster.',
+        };
+    }
+    revalidatePath('/dashboard/monsters');
+    redirect('/dashboard/monsters');
+}

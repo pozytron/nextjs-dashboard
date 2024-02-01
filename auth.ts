@@ -6,7 +6,7 @@ import {z} from "zod";
 import bcrypt from 'bcrypt';
 import {getUser} from "@/app/lib/data/users";
 
-export const { auth, signIn, signOut } = NextAuth({
+export const config = NextAuth({
     ...authConfig,
     providers: [Credentials({
         async authorize(credentials){
@@ -18,7 +18,6 @@ export const { auth, signIn, signOut } = NextAuth({
                 const user = await getUser(email);
                 if(!user) return null
                 const passwordMatches = await bcrypt.compare(password,user?.password);
-                console.log("passwordMatches, hello:", {user})
                 if(passwordMatches) return user;
             }
             console.log("Invalid credentials")
