@@ -8,7 +8,6 @@ type Props = {
 }
 export default async function UsersTable({query, currentPage,}: Props) {
   const users = await fetchFilteredUsers(query, currentPage)
-  console.log({users})
   return (
 
       <div className="mt-6 flow-root">
