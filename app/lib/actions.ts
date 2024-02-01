@@ -300,7 +300,7 @@ export async function deleteUser(id: string) {
 }
 
 const RegisterUserSchema = UserFormSchema
-    .omit({id: true})
+    .omit({id: true,is_active: true,is_admin: true})
     .refine(data => data.password === data.passwordAgain, {
     message: "Passwords don't match",
     path: ["passwordAgain"],

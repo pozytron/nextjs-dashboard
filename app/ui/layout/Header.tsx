@@ -1,4 +1,6 @@
 import Link from "next/link";
+import {config} from "@/auth";
+import {PowerIcon} from "@heroicons/react/24/outline";
 
 export default function Header() {
     return (
@@ -16,7 +18,18 @@ export default function Header() {
                             <Link href="/album" className="bg-peach-500 text-creme-100"
                             >Odbierz Smoksa</Link
                             >
-
+                            <form
+                                action={async () => {
+                                    'use server';
+                                    await config.signOut();
+                                }}
+                            >
+                                     {/*className="flex w-full grow items-center justify-center gap-2 rounded-md bg-gray-50 p-3 text-sm font-medium hover:bg-sky-100 hover:text-blue-600 md:flex-none md:justify-start md:p-2 md:px-3"*/}
+                                <button
+                                >
+                                    <div className="hidden md:block text-14 font-bold uppercase">Wyloguj</div>
+                                </button>
+                            </form>
                         </nav>
                     </div>
                 </div>
