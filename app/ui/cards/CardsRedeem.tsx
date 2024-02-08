@@ -1,7 +1,14 @@
 import React, {useEffect, useState} from 'react';
 import {MonsterCard} from "@/app/ui/cards/MonsterCard";
 
-export type Monster = any
+export type Monster = {
+    id: number
+    monster_name: string
+    image: string
+    planet: string
+    power: number
+    frame: string
+}
 
 interface Props {
     monster: Monster

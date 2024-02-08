@@ -262,6 +262,7 @@ async function seedUserMonsters(client) {
             id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
             user_id UUID REFERENCES users(id) NOT NULL,
             monster_id UUID REFERENCES monsters(id) NOT NULL,
+            coupon_id UUID REFERENCES coupons(id) NOT NULL,
             acquired_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       );
     `;

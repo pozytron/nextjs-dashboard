@@ -7,8 +7,6 @@ interface Props {
 }
 
 const CardFace = ({monster, isActive}: Props) => {
-    const randomNumber = useMemo(() => Math.floor(Math.random() * 10) + 1, []);
-
     return (
         <>
             <div
@@ -23,7 +21,7 @@ const CardFace = ({monster, isActive}: Props) => {
                     </div>
                     <div className="text-leo-500 font-medium text-16">
                         <div className="smoksy text-32 pt-5 xl:text-36 text-peach-400">
-                            {monster.name}
+                            {monster.monster_name}
                         </div>
                         <div className="bg-leo-500 text-white -mx-6 rounded-xl p-4 mt-6 relative -mb-6">
                             <div>Smokomoc</div>
@@ -48,9 +46,9 @@ const CardFace = ({monster, isActive}: Props) => {
                     <div className="aspect-[3/2] absolute w-full left-0 z-10 bottom-10 scale-75">
                         <img
                             src={monster.image ?? ''}
-                            alt={`${monster.name} - Smoksy`}
+                            alt={`${monster.monster_name} - Smoksy`}
                             className="animate-motion"
-                            style={{animationDelay: `${randomNumber}s`}}
+                            style={{animationDelay: `3s`}}
                         />
                     </div>
                     <div className="absolute z-0 inset-0 bg-gradient-to-tl from-[#2a1c54] to-[#714791] mx-auto">

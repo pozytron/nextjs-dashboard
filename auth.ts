@@ -4,7 +4,7 @@ import Credentials from "@auth/core/providers/credentials";
 import {z} from "zod";
 
 import bcrypt from 'bcrypt';
-import {getUser} from "@/app/lib/data/users";
+import {getUserByEmail} from "@/app/lib/data/users";
 
 export const config = NextAuth({
     ...authConfig,
@@ -15,7 +15,7 @@ export const config = NextAuth({
                 .safeParse(credentials);
             if(parsedCredentials.success){
                 const {email,password} = parsedCredentials.data;
-                const user = await getUser(email);
+                const user = await getUserByEmail(email);
                 if(!user) return null
                 const passwordMatches = await bcrypt.compare(password,user?.password);
                 if(passwordMatches) return user;

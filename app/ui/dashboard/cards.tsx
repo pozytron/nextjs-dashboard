@@ -20,28 +20,27 @@ export default async function CardWrapper() {
         numberOfCustomers,
         totalPaidInvoices,
         totalPendingInvoices,
+        totalUsers,
+        totalMonsters,
+        totalCoupons
     } = await fetchCardData();
 
     return (
         <>
 
-            <Card title="Collected" value={totalPaidInvoices} type="collected"/>
-            <Card title="Pending" value={totalPendingInvoices} type="pending"/>
-            <Card title="Total Invoices" value={numberOfInvoices} type="invoices"/>
+            {/*<Card title="Collected" value={totalPaidInvoices} type="collected"/>*/}
+            <Card title="Kupony" value={totalCoupons} type="pending"/>
+            <Card title="Smoki" value={totalMonsters} type="invoices"/>
             <Card
-                title="Total Customers"
-                value={numberOfCustomers}
+                title="Użytkownicy"
+                value={totalUsers}
                 type="customers"
             />
         </>
     );
 }
 
-export function Card({
-                         title,
-                         value,
-                         type,
-                     }: {
+export function Card({title, value, type,}: {
     title: string;
     value: number | string;
     type: 'invoices' | 'customers' | 'pending' | 'collected';

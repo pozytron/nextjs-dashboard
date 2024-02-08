@@ -8,6 +8,10 @@ import {redirect} from "next/navigation";
 import {config} from "@/auth";
 import {AuthError} from "next-auth";
 import bcrypt from "bcrypt";
+import {fetchCoupon, markCouponAsRedeemed} from "@/app/lib/data/coupons";
+import {fetchRandomActiveMonster} from "@/app/lib/data/monsters";
+import {addUserMonsterWithCoupon} from "@/app/lib/data/user_monsters";
+import {Monster} from "@/app/ui/cards/CardsRedeem";
 
 
 //  AUTHENTICATION
@@ -198,7 +202,7 @@ export async function deleteCustomer(id: string) {
 const UpdateCustomer = CustomerFormSchema.omit({id: true})
 
 export async function updateCustomer(id: string,prevState:CustomerState, formData: FormData) {
-    console.log("Updating invoice....")
+    console.log("Updating customer....")
     const validatedFields = UpdateCustomer.safeParse(
         {
             name: formData.get('name'),
@@ -271,7 +275,6 @@ export async function createUser(prevState:UserFormState, formData:FormData) {
             message: 'Missing Fields. Failed to Create Customer.'
         }
     }
-    console.log({validatedFields})
     const { email, name ,password,is_admin,is_active} = validatedFields.data;
     const hashedPassword = await bcrypt.hash(password, 10);
     try {
@@ -393,7 +396,7 @@ type CouponState = {
 
 const CouponFormSchema = z.object({
     id: z.string(),
-    code: z.string().regex(/^[A-Za-z0-9]{4}-[A-Za-z0-9]{4}-[A-Za-z0-9]{4}-[A-Za-z0-9]{4}$/, { message: "Code must be in format XXXX-XXXX-XXXX-XXXX" }),
+    code: z.string().regex(/^[A-Za-z0-9]{4}-[A-Za-z0-9]{4}-[A-Za-z0-9]{4}$/, { message: "Code must be in format XXXX-XXXX-XXXX" }),
     description: z.string(),
 })
 const CreateCouponSchema = CouponFormSchema.omit({id: true})
@@ -430,6 +433,85 @@ export async function createCoupon(prevState:CouponState, formData: FormData) {
     redirect('/dashboard/coupons');
 }
 
+type CouponRedeemState = {
+    monster: any;
+    is_success: boolean;
+    errors?: {
+        code?: string[];
+    }
+    message?: string | null
+
+}
+const RedeemCouponSchema = z.object({
+    userId: z.string(),
+    code: z.string().regex(/^[A-Za-z0-9]{4}-[A-Za-z0-9]{4}-[A-Za-z0-9]{4}$/, { message: "Code must be in format XXXX-XXXX-XXXX" }),
+})
+
+export async function redeemCoupon(prevState:CouponRedeemState, formData:FormData) {
+    console.log("Redeeming coupon....")
+    const validatedFields = RedeemCouponSchema.safeParse(
+        {
+            code: formData.get('code'),
+            userId:formData.get('userId')
+        })
+    if(!validatedFields.success){
+        return {
+            is_success: false,
+            monster:null,
+            errors: validatedFields.error.flatten().fieldErrors,
+            message: 'Missing Fields. Failed to Create Monster.'
+        }
+    }
+    const { code, userId } = validatedFields.data;
+    console.log({code,userId})
+    try {
+     const coupon = await fetchCoupon(code);
+        if(!coupon){
+            return {
+                is_success: false,
+                monster:null,
+                errors:{
+                    code: ['Invalid Coupon Code']
+                },
+                message: 'Invalid Coupon Code',
+            };
+        }
+        if(coupon.redeem_timestamp!==null){
+            return {
+                is_success: false,
+                monster:null,
+                errors:{
+                    code: ['Coupon already redeemed']
+                },
+                message: 'Coupon already redeemed',
+            }
+            }
+        const randomActiveMonster = await fetchRandomActiveMonster();
+        console.log(randomActiveMonster.name)
+
+        await addUserMonsterWithCoupon(userId, randomActiveMonster.id, coupon.id);
+        await markCouponAsRedeemed(userId, coupon.id);
+        return {
+            is_success: true,
+            monster: randomActiveMonster,
+            message: `Coupon redeemed: ${coupon.code}`,
+        };
+
+    } catch (error) {
+        console.log(error)
+        return {
+            is_success: false,
+            monster:null,
+            message: 'Database Error: Failed to Redeem Coupon.',
+        };
+    }
+}
+
+
+// ***************************************************************************
+//                              MONSTERS
+// ***************************************************************************
+
 type MonsterState = {
     errors?: {
         name?: string[];
@@ -453,11 +535,11 @@ const MonsterFormSchema = z.object({
     is_active: z.boolean(),
 })
 
-const MonsterCustomerSchema = MonsterFormSchema.omit({id: true})
+const MonsterSchema = MonsterFormSchema.omit({id: true})
 
 export async function createMonster(prevState:MonsterState, formData:FormData) {
     console.log("Creating monster....")
-    const validatedFields = MonsterCustomerSchema.safeParse(
+    const validatedFields = MonsterSchema.safeParse(
         {
             name: formData.get('name'),
             power: formData.get('power'),
@@ -487,3 +569,38 @@ export async function createMonster(prevState:MonsterState, formData:FormData) {
     revalidatePath('/dashboard/monsters');
     redirect('/dashboard/monsters');
 }
+
+export async function updateMonster(id: string,prevState:MonsterState, formData: FormData) {
+    console.log("Updating monster....")
+    const validatedFields = MonsterSchema.safeParse(
+        {
+            name: formData.get('name'),
+            power: formData.get('power'),
+            image: formData.get('image'),
+            planet: formData.get('planet'),
+            team: formData.get('team'),
+            is_active: Boolean(formData.get('is_active'))
+        }
+    )
+    if(!validatedFields.success){
+        return {
+            errors: validatedFields.error.flatten().fieldErrors,
+            message: 'Missing Fields. Failed to Update Monster.'
+        }
+    }
+
+    const { name,power,image,planet,team,is_active } = validatedFields.data;
+    try {
+        await sql`
+UPDATE monsters
+SET name = ${name}, power = ${power}, image = ${image},planet = ${planet},team = ${team},is_active = ${is_active}, updated_at = NOW()
+WHERE id = ${id}`
+
+    } catch (error) {
+        console.log({error})
+        return {message: 'Database Error: Failed to Update Monster.'};
+    }
+    revalidatePath('/dashboard/monsters');
+    redirect('/dashboard/monsters');
+}
+

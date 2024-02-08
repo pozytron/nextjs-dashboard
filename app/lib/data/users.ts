@@ -3,7 +3,7 @@ import {sql} from "@vercel/postgres";
 import {unstable_noStore as noStore} from "next/dist/server/web/spec-extension/unstable-no-store";
 import {formatCurrency} from "@/app/lib/utils";
 
-export async function getUser(email: string) {
+export async function getUserByEmail(email: string) {
     try {
         const user = await sql<User>`SELECT * FROM users WHERE email=${email}`;
         return user.rows[0];

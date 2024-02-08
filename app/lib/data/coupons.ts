@@ -11,6 +11,24 @@ type Coupon = {
 
 const ITEMS_PER_PAGE = 6;
 
+export async function fetchCoupon(code:string) {
+    noStore();
+    try {
+        const coupon = await sql`
+        SELECT
+        coupons.id,
+        coupons.code,
+        coupons.description,
+        coupons.created_at,
+        coupons.redeem_timestamp
+        FROM coupons
+        WHERE code = ${code}`
+        return coupon.rows[0]
+    } catch (error) {
+        console.error('Database Error:', error);
+        throw new Error('Failed to fetch coupon.');
+    }
+}
 
 export async function fetchCouponsPages(query:string) {
     noStore();
@@ -57,5 +75,26 @@ export async function fetchFilteredCoupons(query: string, currentPage: number) {
     } catch (error) {
         console.error('Database Error:', error);
         throw new Error('Failed to fetch coupons.');
+    }
+}
+
+export async function markCouponAsRedeemed(userId:string, couponId:string) {
+    try {
+        const result = await sql`
+            UPDATE coupons
+            SET redeem_timestamp = NOW(), user_id = ${userId}
+            WHERE id = ${couponId} AND redeem_timestamp IS NULL
+            RETURNING *;  
+        `;
+        if (result.rows.length === 0) {
+            console.log('Coupon not found, already redeemed, or user ID is invalid.');
+            return null;
+        }
+
+        console.log('Coupon redeemed successfully for user:', result);
+        return result;
+    } catch (error) {
+        console.error('Error redeeming coupon for user:', error);
+        throw error;
     }
 }

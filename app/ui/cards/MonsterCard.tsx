@@ -1,3 +1,4 @@
+'use client'
 import React, {useMemo, useState} from 'react';
 import {Monster} from "@/app/ui/cards/CardsRedeem";
 import CardFace from "@/app/ui/cards/CardFace";

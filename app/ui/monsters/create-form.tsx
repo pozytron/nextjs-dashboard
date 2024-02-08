@@ -5,7 +5,7 @@ import {Button} from '@/app/ui/button';
 import {useFormState} from "react-dom";
 import { createMonster} from "@/app/lib/actions";
 
-const teams = [
+export const teams = [
     {id: 1, name: 'earth'},
     {id: 2, name: 'water'},
     {id: 3, name: 'fire'},

@@ -1,4 +1,4 @@
-import { User} from "@/app/lib/definitions";
+import {User} from "@/app/lib/definitions";
 import {sql} from "@vercel/postgres";
 import {unstable_noStore as noStore} from "next/dist/server/web/spec-extension/unstable-no-store";
 
@@ -66,16 +66,16 @@ export async function fetchFilteredMonsters(query: string, currentPage: number) 
 export async function fetchMonsterById(id: string) {
     noStore();
     try {
-        const data = await sql<User>`
+        const data = await sql<Monster>`
       SELECT
         monsters.id,
         monsters.name,
    	  monsters.power,
 		  monsters.image,
-		  monsters.planet
-		  monsters.team
-		  monsters.created_at
-		  monsters.updated_at
+		  monsters.planet,
+		  monsters.team,
+		  monsters.created_at,
+		  monsters.updated_at,
 		  monsters.is_active
       FROM monsters
       WHERE monsters.id = ${id};
@@ -85,5 +85,56 @@ export async function fetchMonsterById(id: string) {
     } catch (error) {
         console.error('Database Error:', error);
         throw new Error('Failed to fetch monster.');
+    }
+}
+
+
+export async function fetchActiveMonsters() {
+    noStore();
+    try {
+        const data = await sql<Monster>`
+      SELECT
+        monsters.id,
+        monsters.name,
+   	    monsters.power,
+		monsters.image,
+		monsters.planet,
+		monsters.team,
+		monsters.created_at,
+		monsters.updated_at,
+		monsters.is_active
+      FROM monsters
+      WHERE monsters.is_active = ${true};
+    `;
+        return data.rows
+    } catch (error) {
+        console.error('Database Error:', error);
+        throw new Error('Failed to fetch active monsters.');
+    }
+}
+export async function fetchRandomActiveMonster() {
+    noStore();
+    try {
+        const data = await sql<Monster>`
+      SELECT
+        monsters.id,
+        monsters.name,
+   	    monsters.power,
+		monsters.image,
+		monsters.planet,
+		monsters.team,
+		monsters.created_at,
+		monsters.updated_at,
+		monsters.is_active
+      FROM monsters
+      WHERE monsters.is_active = ${true}
+      ORDER BY RANDOM()
+      Limit 1
+    `;
+
+        return data.rows[0]
+    } catch (error) {
+        console.error('Database Error:', error);
+        throw new Error('Failed to fetch a random active monster.');
     }
 }
