@@ -4,10 +4,10 @@ import {Metadata} from "next";
 
 export const metadata:Metadata = {
   title: {
-    template: '%s | Solopreneur',
-    default: 'Solopreneur',
+    template: '%s | Smoksy',
+    default: 'Smoksy',
   },
-  description: 'A dashboard for solopreneurs',
+  description: 'Świat smoksów.',
   metadataBase: new URL('https://solopreneur-desktop.vercel.app/')
 }
 
