@@ -9,7 +9,7 @@ type Coupon = {
 }
 
 
-const ITEMS_PER_PAGE = 6;
+const ITEMS_PER_PAGE = 16;
 
 export async function fetchCoupon(code:string) {
     noStore();

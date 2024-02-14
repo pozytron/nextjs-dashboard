@@ -5,7 +5,7 @@ import Search from "@/app/ui/search";
 import Pagination from "@/app/ui/invoices/pagination";
 import {fetchCouponsPages} from "@/app/lib/data/coupons";
 import Table from '@/app/ui/coupons/table';
-import {CreateCoupon} from "@/app/ui/coupons/buttons";
+import {CreateCoupon, GenerateCoupons} from "@/app/ui/coupons/buttons";
 
 export const metadata: Metadata = {
     title: 'Coupons',
@@ -31,6 +31,7 @@ export default async function Page({searchParams}: PageProps) {
             </div>
             <div className="mt-4 flex items-center justify-between gap-2 md:mt-8">
                 <Search placeholder="Search coupons..."/>
+                <GenerateCoupons/>
                 <CreateCoupon/>
             </div>
 

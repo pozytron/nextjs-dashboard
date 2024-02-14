@@ -11,7 +11,8 @@ import bcrypt from "bcrypt";
 import {fetchCoupon, markCouponAsRedeemed} from "@/app/lib/data/coupons";
 import {fetchRandomActiveMonster} from "@/app/lib/data/monsters";
 import {addUserMonsterWithCoupon} from "@/app/lib/data/user_monsters";
-import {Monster} from "@/app/ui/cards/CardsRedeem";
+import {getCouponCode} from "@/app/lib/getCouponCode";
+import {GenerateCouponState} from "@/app/ui/coupons/generate-form";
 
 
 //  AUTHENTICATION
@@ -40,7 +41,7 @@ const InvoiceFormSchema = z.object({
     id: z.string(),
     customerId: z.string({invalid_type_error: "please select a customer"}),
     amount: z.coerce.number().gt(0, {message: "Please enter an amount greater than 0"}),
-    status: z.enum(['paid', 'pending'],{
+    status: z.enum(['paid', 'pending'], {
         invalid_type_error: "Please select an invoice status",
     }),
     date: z.string(),
@@ -57,7 +58,7 @@ type State = {
 
 }
 
-export async function createInvoice(prevState:State, formData: FormData) {
+export async function createInvoice(prevState: State, formData: FormData) {
     console.log("Creating invoice....")
     const validatedFields = CreateInvoiceSchema.safeParse(
         {
@@ -66,14 +67,14 @@ export async function createInvoice(prevState:State, formData: FormData) {
             status: formData.get('status'),
         }
     )
-    if(!validatedFields.success){
+    if (!validatedFields.success) {
         return {
             errors: validatedFields.error.flatten().fieldErrors,
             message: 'Missing Fields. Failed to Create Invoice.'
         }
     }
 
-    const { customerId, amount, status } = validatedFields.data;
+    const {customerId, amount, status} = validatedFields.data;
     const amountInCents = amount * 100;
     const date = new Date().toISOString().split('T')[0];
 
@@ -95,7 +96,7 @@ export async function createInvoice(prevState:State, formData: FormData) {
 
 const UpdateInvoice = InvoiceFormSchema.omit({id: true, date: true})
 
-export async function updateInvoice(id: string,prevState:State, formData: FormData) {
+export async function updateInvoice(id: string, prevState: State, formData: FormData) {
     console.log("Updating invoice....")
     const validatedFields = UpdateInvoice.safeParse(
         {
@@ -104,11 +105,11 @@ export async function updateInvoice(id: string,prevState:State, formData: FormDa
             status: formData.get('status'),
         }
     )
-    if(!validatedFields.success){
-    return {
-        errors: validatedFields.error.flatten().fieldErrors,
-        message: 'Missing Fields. Failed to Update Invoice.'
-    }
+    if (!validatedFields.success) {
+        return {
+            errors: validatedFields.error.flatten().fieldErrors,
+            message: 'Missing Fields. Failed to Update Invoice.'
+        }
     }
 
     const {customerId, amount, status} = validatedFields.data
@@ -143,7 +144,7 @@ export async function deleteInvoice(id: string) {
 
 
 const CustomerFormSchema = z.object({
-    id:z.string(),
+    id: z.string(),
     name: z.string().min(1, {message: "Please enter a customer name"}),
     email: z.string().min(1, {message: "Please enter a customer email"}),
 })
@@ -159,21 +160,21 @@ type CustomerState = {
 
 }
 
-export async function createCustomer(prevState:CustomerState, formData:FormData) {
+export async function createCustomer(prevState: CustomerState, formData: FormData) {
     console.log("Creating customer....")
     const validatedFields = CreateCustomerSchema.safeParse(
         {
-        name: formData.get('name'),
-        email: formData.get('email'),
-    })
-    if(!validatedFields.success){
+            name: formData.get('name'),
+            email: formData.get('email'),
+        })
+    if (!validatedFields.success) {
         return {
             errors: validatedFields.error.flatten().fieldErrors,
             message: 'Missing Fields. Failed to Create Customer.'
         }
     }
     console.log({validatedFields})
-    const { email, name } = validatedFields.data;
+    const {email, name} = validatedFields.data;
     const image_url = 'https://i.pravatar.cc/300';
     try {
         await sql`
@@ -189,6 +190,7 @@ export async function createCustomer(prevState:CustomerState, formData:FormData)
     revalidatePath('/dashboard/customers');
     redirect('/dashboard/customers');
 }
+
 export async function deleteCustomer(id: string) {
     try {
         await sql`DELETE FROM customers WHERE id = ${id}`
@@ -201,7 +203,7 @@ export async function deleteCustomer(id: string) {
 
 const UpdateCustomer = CustomerFormSchema.omit({id: true})
 
-export async function updateCustomer(id: string,prevState:CustomerState, formData: FormData) {
+export async function updateCustomer(id: string, prevState: CustomerState, formData: FormData) {
     console.log("Updating customer....")
     const validatedFields = UpdateCustomer.safeParse(
         {
@@ -209,14 +211,14 @@ export async function updateCustomer(id: string,prevState:CustomerState, formDat
             email: formData.get('email'),
         }
     )
-    if(!validatedFields.success){
+    if (!validatedFields.success) {
         return {
             errors: validatedFields.error.flatten().fieldErrors,
             message: 'Missing Fields. Failed to Update Customer.'
         }
     }
 
-    const { email, name } = validatedFields.data;
+    const {email, name} = validatedFields.data;
     try {
         await sql`
 UPDATE customers
@@ -234,7 +236,7 @@ WHERE id = ${id}`
 //  ***********************   USERS   ***********************
 
 const UserFormSchema = z.object({
-    id:z.string(),
+    id: z.string(),
     name: z.string().min(1, {message: "Please enter a user name"}),
     email: z.string().min(1, {message: "Please enter a user email"}),
     password: z.string().min(1, {message: "Please enter a user password"}),
@@ -258,7 +260,7 @@ type UserFormState = {
 
 }
 
-export async function createUser(prevState:UserFormState, formData:FormData) {
+export async function createUser(prevState: UserFormState, formData: FormData) {
     console.log("Creating user....")
     const validatedFields = CreateUserSchema.safeParse(
         {
@@ -269,13 +271,13 @@ export async function createUser(prevState:UserFormState, formData:FormData) {
             is_admin: formData.get('is_admin') === 'true',
             is_active: formData.get('is_active') === 'true',
         })
-    if(!validatedFields.success){
+    if (!validatedFields.success) {
         return {
             errors: validatedFields.error.flatten().fieldErrors,
             message: 'Missing Fields. Failed to Create Customer.'
         }
     }
-    const { email, name ,password,is_admin,is_active} = validatedFields.data;
+    const {email, name, password, is_admin, is_active} = validatedFields.data;
     const hashedPassword = await bcrypt.hash(password, 10);
     try {
         await sql`
@@ -291,6 +293,7 @@ export async function createUser(prevState:UserFormState, formData:FormData) {
     revalidatePath('/dashboard/users');
     redirect('/dashboard/users');
 }
+
 export async function deleteUser(id: string) {
 
     try {
@@ -303,13 +306,13 @@ export async function deleteUser(id: string) {
 }
 
 const RegisterUserSchema = UserFormSchema
-    .omit({id: true,is_active: true,is_admin: true})
+    .omit({id: true, is_active: true, is_admin: true})
     .refine(data => data.password === data.passwordAgain, {
-    message: "Passwords don't match",
-    path: ["passwordAgain"],
-});
+        message: "Passwords don't match",
+        path: ["passwordAgain"],
+    });
 
-export async function registerUser(prevState:UserFormState, formData:FormData) {
+export async function registerUser(prevState: UserFormState, formData: FormData) {
     console.log("Register user....")
     const validatedFields = RegisterUserSchema.safeParse(
         {
@@ -319,7 +322,7 @@ export async function registerUser(prevState:UserFormState, formData:FormData) {
             passwordAgain: formData.get('passwordAgain'),
         })
 
-    if(!validatedFields.success){
+    if (!validatedFields.success) {
         console.log({validatedFields})
         console.log(validatedFields.error)
 
@@ -329,7 +332,7 @@ export async function registerUser(prevState:UserFormState, formData:FormData) {
         }
     }
     console.log({validatedFields})
-    const { email, name ,password,passwordAgain} = validatedFields.data;
+    const {email, name, password, passwordAgain} = validatedFields.data;
 
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -347,9 +350,9 @@ export async function registerUser(prevState:UserFormState, formData:FormData) {
     redirect('/login');
 }
 
-const UpdateUserSchema = UserFormSchema.omit({id: true,password:true,passwordAgain:true})
+const UpdateUserSchema = UserFormSchema.omit({id: true, password: true, passwordAgain: true})
 
-export async function updateUser(id: string, prevState:UserFormState, formData: FormData) {
+export async function updateUser(id: string, prevState: UserFormState, formData: FormData) {
     console.log("Updating user....")
     const validatedFields = UpdateUserSchema.safeParse(
         {
@@ -359,14 +362,14 @@ export async function updateUser(id: string, prevState:UserFormState, formData: 
             is_active: formData.get('is_active') === 'true',
         }
     )
-    if(!validatedFields.success){
+    if (!validatedFields.success) {
         return {
             errors: validatedFields.error.flatten().fieldErrors,
             message: 'Missing Fields. Failed to Update User.'
         }
     }
 
-    const { email, name,is_admin,is_active } = validatedFields.data;
+    const {email, name, is_admin, is_active} = validatedFields.data;
     try {
         await sql`
 UPDATE users
@@ -396,12 +399,12 @@ type CouponState = {
 
 const CouponFormSchema = z.object({
     id: z.string(),
-    code: z.string().regex(/^[A-Za-z0-9]{4}-[A-Za-z0-9]{4}-[A-Za-z0-9]{4}$/, { message: "Code must be in format XXXX-XXXX-XXXX" }),
+    code: z.string().regex(/^[A-Za-z0-9]{4}-[A-Za-z0-9]{4}-[A-Za-z0-9]{4}$/, {message: "Code must be in format XXXX-XXXX-XXXX"}),
     description: z.string(),
 })
 const CreateCouponSchema = CouponFormSchema.omit({id: true})
 
-export async function createCoupon(prevState:CouponState, formData: FormData) {
+export async function createCoupon(prevState: CouponState, formData: FormData) {
     console.log("Creating coupon....")
     const validatedFields = CreateCouponSchema.safeParse(
         {
@@ -409,14 +412,14 @@ export async function createCoupon(prevState:CouponState, formData: FormData) {
             description: formData.get('description'),
         }
     )
-    if(!validatedFields.success){
+    if (!validatedFields.success) {
         return {
             errors: validatedFields.error.flatten().fieldErrors,
             message: 'Missing Fields. Failed to Create Coupon.'
         }
     }
 
-    const { code,description } = validatedFields.data;
+    const {code, description} = validatedFields.data;
 
     try {
         await sql`
@@ -433,6 +436,72 @@ export async function createCoupon(prevState:CouponState, formData: FormData) {
     redirect('/dashboard/coupons');
 }
 
+
+const CouponGenerateFormSchema = z.object({
+    amount: z.number(),
+    description: z.string()
+})
+
+export async function generateCoupons(prevState: GenerateCouponState, formData: FormData) {
+    console.log("Generate coupon....")
+    const validatedFields = CouponGenerateFormSchema.safeParse(
+        {
+            amount: Number(formData.get('amount')),
+            description: formData.get('description'),
+        }
+    )
+    if (!validatedFields.success) {
+        return {
+            errors: validatedFields.error.flatten().fieldErrors,
+            message: 'Missing Fields. Failed to Generate Coupon.'
+        }
+    }
+
+    const {amount, description} = validatedFields.data;
+
+    let uniqueCoupons =[]
+    const maxAttempts = amount * 5; // Increase max attempts to account for duplicate checks
+
+    let attempts = 0;
+    while (uniqueCoupons.length < amount && attempts < maxAttempts) {
+        const newCode = getCouponCode();
+        const existsInDb = await sql`SELECT EXISTS(SELECT 1 FROM coupons WHERE code = ${newCode}) AS "exists"`;
+
+        if (!existsInDb.rows[0].exists) {
+            uniqueCoupons.push(newCode);
+        } else {
+            console.log(`Duplicate found for ${newCode}, regenerating...`);
+        }
+
+        attempts++;
+    }
+
+    if (uniqueCoupons.length !== amount) {
+        return {
+            message: `Failed to generate the required amount of unique coupons. Only generated ${uniqueCoupons.length} coupons.`
+        };
+    }
+
+
+
+    try {
+
+        for (const code of uniqueCoupons) {
+            await sql`
+            INSERT INTO coupons (code, description)
+            VALUES (${code}, ${description})
+        `;
+        }
+    } catch (error) {
+        return {
+            message: 'Database Error: Failed to Create Coupon.',
+        };
+    }
+    revalidatePath('/dashboard/coupons');
+    redirect('/dashboard/coupons');
+}
+
+
 type CouponRedeemState = {
     monster: any;
     is_success: boolean;
@@ -444,50 +513,50 @@ type CouponRedeemState = {
 }
 const RedeemCouponSchema = z.object({
     userId: z.string(),
-    code: z.string().regex(/^[A-Za-z0-9]{4}-[A-Za-z0-9]{4}-[A-Za-z0-9]{4}$/, { message: "Code must be in format XXXX-XXXX-XXXX" }),
+    code: z.string().regex(/^[A-Za-z0-9]{4}-[A-Za-z0-9]{4}-[A-Za-z0-9]{4}$/, {message: "Code must be in format XXXX-XXXX-XXXX"}),
 })
 
-export async function redeemCoupon(prevState:CouponRedeemState, formData:FormData) {
+export async function redeemCoupon(prevState: CouponRedeemState, formData: FormData) {
     console.log("Redeeming coupon....")
     const validatedFields = RedeemCouponSchema.safeParse(
         {
             code: formData.get('code'),
-            userId:formData.get('userId')
+            userId: formData.get('userId')
         })
-    if(!validatedFields.success){
+    if (!validatedFields.success) {
         return {
             is_success: false,
-            monster:null,
+            monster: null,
             errors: validatedFields.error.flatten().fieldErrors,
             message: 'Missing Fields. Failed to Create Monster.'
         }
     }
-    const { code, userId } = validatedFields.data;
-    console.log({code,userId})
+    const {code, userId} = validatedFields.data;
+    // console.log({code, userId})
     try {
-     const coupon = await fetchCoupon(code);
-        if(!coupon){
+        const coupon = await fetchCoupon(code);
+        if (!coupon) {
             return {
                 is_success: false,
-                monster:null,
-                errors:{
+                monster: null,
+                errors: {
                     code: ['Invalid Coupon Code']
                 },
                 message: 'Invalid Coupon Code',
             };
         }
-        if(coupon.redeem_timestamp!==null){
+        if (coupon.redeem_timestamp !== null) {
             return {
                 is_success: false,
-                monster:null,
-                errors:{
+                monster: null,
+                errors: {
                     code: ['Coupon already redeemed']
                 },
                 message: 'Coupon already redeemed',
             }
-            }
+        }
         const randomActiveMonster = await fetchRandomActiveMonster();
-        console.log(randomActiveMonster.name)
+        // console.log(randomActiveMonster.name)
 
         await addUserMonsterWithCoupon(userId, randomActiveMonster.id, coupon.id);
         await markCouponAsRedeemed(userId, coupon.id);
@@ -501,7 +570,7 @@ export async function redeemCoupon(prevState:CouponRedeemState, formData:FormDat
         console.log(error)
         return {
             is_success: false,
-            monster:null,
+            monster: null,
             message: 'Database Error: Failed to Redeem Coupon.',
         };
     }
@@ -526,7 +595,7 @@ type MonsterState = {
 
 
 const MonsterFormSchema = z.object({
-    id:z.string(),
+    id: z.string(),
     name: z.string().min(1, {message: "Please enter a monster name"}),
     power: z.coerce.number().gt(0, {message: "Please enter an amount greater than 0"}),
     image: z.string().min(1, {message: "Please enter url for image"}),
@@ -537,7 +606,7 @@ const MonsterFormSchema = z.object({
 
 const MonsterSchema = MonsterFormSchema.omit({id: true})
 
-export async function createMonster(prevState:MonsterState, formData:FormData) {
+export async function createMonster(prevState: MonsterState, formData: FormData) {
     console.log("Creating monster....")
     const validatedFields = MonsterSchema.safeParse(
         {
@@ -548,13 +617,13 @@ export async function createMonster(prevState:MonsterState, formData:FormData) {
             team: formData.get('team'),
             is_active: formData.get('is_active') === 'true'
         })
-    if(!validatedFields.success){
+    if (!validatedFields.success) {
         return {
             errors: validatedFields.error.flatten().fieldErrors,
             message: 'Missing Fields. Failed to Create Monster.'
         }
     }
-    const { name,power,image,planet,team,is_active } = validatedFields.data;
+    const {name, power, image, planet, team, is_active} = validatedFields.data;
     try {
         await sql`
             INSERT INTO monsters (name, power, image,planet,team,is_active)
@@ -570,7 +639,7 @@ export async function createMonster(prevState:MonsterState, formData:FormData) {
     redirect('/dashboard/monsters');
 }
 
-export async function updateMonster(id: string,prevState:MonsterState, formData: FormData) {
+export async function updateMonster(id: string, prevState: MonsterState, formData: FormData) {
     console.log("Updating monster....")
     const validatedFields = MonsterSchema.safeParse(
         {
@@ -582,14 +651,14 @@ export async function updateMonster(id: string,prevState:MonsterState, formData:
             is_active: Boolean(formData.get('is_active'))
         }
     )
-    if(!validatedFields.success){
+    if (!validatedFields.success) {
         return {
             errors: validatedFields.error.flatten().fieldErrors,
             message: 'Missing Fields. Failed to Update Monster.'
         }
     }
 
-    const { name,power,image,planet,team,is_active } = validatedFields.data;
+    const {name, power, image, planet, team, is_active} = validatedFields.data;
     try {
         await sql`
 UPDATE monsters

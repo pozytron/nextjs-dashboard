@@ -1,52 +1,58 @@
 'use client'
 import Link from 'next/link';
-import {
-    PencilIcon,
-} from '@heroicons/react/24/outline';
+import {PencilIcon} from '@heroicons/react/24/outline';
 import {Button} from '@/app/ui/button';
-import {createCoupon} from "@/app/lib/actions";
+import {generateCoupons} from "@/app/lib/actions";
 import {useFormState} from "react-dom";
-import {getCouponCode} from "@/app/lib/getCouponCode";
 
+export type GenerateCouponState = {
+    errors?: {
+        amount?: string[];
+        description?: string[];
+    }
+    message?: string | null
+
+}
 
 export default function Form() {
-    const initialState = {message: null, errors: {}};
-    const [state, dispatch] = useFormState(createCoupon, initialState)
-    console.log({state}, state.errors)
+    const initialState: GenerateCouponState = {message: null, errors: {}};
+    const [state, dispatch] = useFormState(generateCoupons, initialState)
+
 
     return (
         <form action={dispatch}>
             <div className="rounded-md bg-gray-50 p-4 md:p-6">
-                {/*Coupon Code*/}
+                {/* Amount of codes */}
                 <div className="mb-4">
-                    <label htmlFor="code" className="mb-2 block text-sm font-medium">
-                        Coupon Code
+                    <label htmlFor="amount" className="mb-2 block text-sm font-medium">
+                        Ile kodów chcesz wygenerować?
                     </label>
                     <div className="relative mt-2 rounded-md">
                         <div className="relative">
                             <input
-                                id="code"
-                                name="code"
-                                type="text"
-                                placeholder="Enter coupon code"
+                                id="amount"
+                                name="amount"
+                                type="number"
+                                step="1"
+                                placeholder="Podaj ilość"
                                 className="peer block w-full rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
-                                aria-describedby="coupon-code-error"
-                                defaultValue={getCouponCode()}
-                                required
+                                aria-describedby="coupon-amount-error"
+                                // required
                             />
                             <PencilIcon
                                 className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900"/>
                         </div>
                     </div>
-                    <div id="coupon-code-error" aria-live="polite" aria-atomic="true">
-                        {state.errors?.code &&
-                            state.errors.code.map((error: string) => (
+                    <div id="coupon-amount-error" aria-live="polite" aria-atomic="true">
+                        {state?.errors?.amount &&
+                            state.errors.amount.map((error: string) => (
                                 <p className="mt-2 text-sm text-red-500" key={error}>
                                     {error}
                                 </p>
                             ))}
                     </div>
                 </div>
+
                 {/*Coupon Description*/}
                 <div className="mb-4">
                     <label htmlFor="description" className="mb-2 block text-sm font-medium">
@@ -58,7 +64,7 @@ export default function Form() {
                                 id="description"
                                 name="description"
                                 type="text"
-                                placeholder="Enter coupon description"
+                                placeholder="Wprowadź opis kuponów"
                                 className="peer block w-full rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
                                 aria-describedby="coupon-description-error"
                                 required
@@ -68,7 +74,7 @@ export default function Form() {
                         </div>
                     </div>
                     <div id="coupon-description-error" aria-live="polite" aria-atomic="true">
-                        {state.errors?.description &&
+                        {state?.errors?.description &&
                             state.errors.description.map((error: string) => (
                                 <p className="mt-2 text-sm text-red-500" key={error}>
                                     {error}

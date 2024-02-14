@@ -1,16 +1,16 @@
 import React from 'react';
 import {Metadata} from "next";
 import Breadcrumbs from "@/app/ui/breadcrumbs/breadcrumbs";
-import Form from "@/app/ui/coupons/create-form";
+import Form from "@/app/ui/coupons/generate-form";
 
 export const metadata: Metadata = {
-    title: 'Create coupon',
+    title: 'Generuj kupony',
 };
 
 
 const breadcrumbs = [
-    {label: 'Coupons', href: '/dashboard/coupons'},
-    {label: 'Create Coupon', href: '/dashboard/coupons/coupon', active: true},
+    {label: 'Kupony', href: '/dashboard/coupons'},
+    {label: 'Generuj kupony', href: '/dashboard/coupons/generate', active: true},
 ];
 
 export default async function Page() {
