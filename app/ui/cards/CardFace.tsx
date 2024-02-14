@@ -1,12 +1,19 @@
 import React, {useMemo} from 'react';
 import {Monster} from "@/app/ui/cards/CardsRedeem";
+import {CardCount} from "@/app/ui/cards/CardCount";
 
 interface Props {
     monster: Monster
     isActive: boolean
 }
 
+function CardFaceImage(props: { image: string }) {
+    return <div className="aspect-[3/2]">
+        <img src={props.image ?? ""} alt="Smok"/>
+    </div>;
+}
 const CardFace = ({monster, isActive}: Props) => {
+    console.log({monster})
     return (
         <>
             <div
@@ -14,11 +21,11 @@ const CardFace = ({monster, isActive}: Props) => {
                 style={isActive ? {perspective: '1000px', transform: 'rotateY(90deg)'} : {}}
             >
                 <div
-                    className={`bg-creme-100 rounded-3xl p-5 border-4 w-full ${monster.frame}`}
+                    className={` bg-creme-100 rounded-3xl p-5 border-4 w-full ${monster.frame}`}
                 >
-                    <div className="aspect-[3/2]">
-                        <img src={monster.image ?? ''} alt=""/>
-                    </div>
+                    <CardCount count={monster.count}/>
+                    <CardFaceImage image={monster.image}/>
+                    {/*FOOTER*/}
                     <div className="text-leo-500 font-medium text-16">
                         <div className="smoksy text-32 pt-5 xl:text-36 text-peach-400">
                             {monster.monster_name}

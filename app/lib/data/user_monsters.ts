@@ -24,6 +24,29 @@ export async function fetchUserMonsters(id:string){
         throw new Error('Failed to fetch all monsters.');
     }
 }
+export async function fetchUserMonstersWithCount(id: string) {
+    try {
+        const monsters = await sql`
+      SELECT
+        monsters.id AS monster_id,
+        monsters.name AS monster_name,
+        monsters.power,
+        monsters.image,
+        monsters.planet,
+        monsters.team,
+        COUNT(user_monsters.monster_id) AS count
+      FROM user_monsters
+      JOIN monsters ON user_monsters.monster_id = monsters.id
+      WHERE user_monsters.user_id = ${`${id}`}
+      GROUP BY monsters.id, monsters.name, monsters.power, monsters.image, monsters.planet, monsters.team
+      ORDER BY COUNT(user_monsters.monster_id) DESC`;
+
+        return monsters.rows;
+    } catch (err) {
+        console.error('Database Error:', err);
+        throw new Error('Failed to fetch all monsters.');
+    }
+}
 
 export async function addUserMonsterWithCoupon(userId:string, monsterId:string, couponId:string) {
     try {

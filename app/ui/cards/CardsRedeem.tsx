@@ -8,6 +8,7 @@ export type Monster = {
     planet: string
     power: number
     frame: string
+    count: number
 }
 
 interface Props {

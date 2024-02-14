@@ -1,10 +1,10 @@
 import React from 'react';
-import {fetchUserMonsters} from "@/app/lib/data/user_monsters";
+import { fetchUserMonstersWithCount} from "@/app/lib/data/user_monsters";
 import {MonsterCard} from "@/app/ui/cards/MonsterCard";
 import {Monster} from "@/app/ui/cards/CardsRedeem";
 
 export async function MonstersAlbum({userId}: { userId: string }) {
-    const monsters = await fetchUserMonsters(userId)
+    const monsters = await fetchUserMonstersWithCount(userId)
 
     return (
         <div>
