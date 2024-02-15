@@ -1,3 +1,5 @@
+@import url("https://fonts.googleapis.com/css2?family=Titan+One&family=Lexend:wght@100;200;400;500;600;800&family=VT323&display=swap");
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -16,3 +18,79 @@ input[type='number']::-webkit-outer-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
+
+:root {
+  --foreground-rgb: 0, 0, 0;
+  --background-start-rgb: 214, 219, 220;
+  --background-end-rgb: 255, 255, 255;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --foreground-rgb: 255, 255, 255;
+    --background-start-rgb: 0, 0, 0;
+    --background-end-rgb: 0, 0, 0;
+  }
+}
+
+
+body {
+  @apply font-sans text-14 bg-creme-100  text-peach font-medium tracking-wider leading-snug;
+}
+
+
+h1 {
+  @apply text-28 lg:text-36 font-serif font-bold;
+}
+
+h2 {
+  @apply text-20 lg:text-32 font-serif font-bold;
+}
+
+h3 {
+  @apply text-16 lg:text-24 font-serif font-bold;
+}
+
+h4 {
+  @apply text-16 lg:text-20 font-serif font-bold;
+}
+
+.smoksy {
+  @apply font-serif;
+  -webkit-text-stroke-width: 0.1px;
+  -webkit-text-stroke-color: white;
+  letter-spacing: -1px;
+  paint-order: stroke fill;
+}
+
+/*.table__header {*/
+/*  min-width: 250px;*/
+/*  @apply text-leo-500*/
+
+/*}*/
+
+/*.table {*/
+/*  display: flex;*/
+/*  flex-direction: column;*/
+
+/*}*/
+
+/*.table__cell {*/
+/*  font-size: 1.5em;*/
+/*  @apply border border*/
+/*}*/
+
+/*.table__body {*/
+
+/*}*/
+
+/*.table__row {*/
+/*  display: flex*/
+/*}*/
+
+/*.table__cell {*/
+/*  display: flex;*/
+/*  justify-content: center;*/
+/*  align-items: center;*/
+/*  width: 100%;*/
+/*}*/

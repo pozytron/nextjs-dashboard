@@ -1,12 +1,15 @@
 import Link from 'next/link';
+import Image from "next/image";
 
 export default function Page() {
     return (
         <main className="flex min-h-screen flex-col items-center p-6 bg-creme-100">
             <div>
-
                 <Link href="/album" className="block w-[220px] relative my-5 lg:my-0 lg:top-6">
-                    <img src="/img/logo/smoksy-logo.svg" alt="Smoksy"/>
+                    <Image
+                        src="/img/logo/smoksy-logo.svg"
+                        alt="Smoksy"
+                    />
                 </Link>
             </div>
             <div className="flex gap-5 mt-10">

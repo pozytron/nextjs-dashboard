@@ -23,7 +23,7 @@ export default function RedeemSection({userId}:{userId:string}) {
     const [state, dispatch] = useFormState(redeemCoupon, initialState)
 
     useEffect(() => {
-        if(state.is_success===true) {
+        if(state.is_success) {
             setRandomCharacter(state.monster)
             setStartRedeem(true);
         }
